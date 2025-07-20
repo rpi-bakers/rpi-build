@@ -1,0 +1,15 @@
+.vscode/
+.repo/
+poky/
+build/
+rpi-*-build/
+meta-custom/
+meta-mono/
+meta-openembedded/
+meta-raspberrypi/
+meta-pironman5/
+meta-browser/
+meta-clang/
+meta-lts-mixins/
+meta-qt6/
+meta-openjdk-temurin/
