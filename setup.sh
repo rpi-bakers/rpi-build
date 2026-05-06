@@ -1,16 +1,18 @@
 #!/bin/bash
 
+###############################################################################
+# Rpi build BSP setup script.
+###############################################################################
+
 LOGPREFIX="[rpi-setup]"
 LOGSEPARATOR="################################################################################"
 
 echo "${LOGSEPARATOR}" ########################################################
 echo "${LOGPREFIX} Setup environment."
 . env.sh
-echo "${LOGSEPARATOR}" ########################################################
 
-###############################################################################
+echo "${LOGSEPARATOR}" ########################################################
 echo "${LOGPREFIX} Initializing repository..."
-###############################################################################
 
 ###############################################################################
 # Install repo command if not found (first time only)
@@ -44,9 +46,8 @@ if [ ! -d .repo ]; then
         -m "${MANIFEST}"
 fi
 echo ""
-echo "${LOGSEPARATOR}" ########################################################
 
-###############################################################################
+echo "${LOGSEPARATOR}" ########################################################
 echo "${LOGPREFIX} Updating repository..."
 ###############################################################################
 
@@ -54,35 +55,34 @@ echo "${LOGPREFIX} Updating repository..."
 echo "${LOGPREFIX} repo sync in progress..."
 #------------------------------------------------------------------------------
 repo sync -j"$(nproc)"
-
-###############################################################################
 echo ""
+
 echo "${LOGSEPARATOR}" ########################################################
 echo "${LOGPREFIX} Init Yocto build environment..."
 #------------------------------------------------------------------------------
 SRC_DIR=$(pwd)
 
+LOCAL_CONF="${BUILD_DIR}/conf/local.conf"
+
+# Remove local.conf if it exists to avoid conflicts with previous settings.
+rm -r "${LOCAL_CONF}"
+
 # Set TEMPLATECONF for poky/scripts/oe-setup-builddir
 TEMPLATECONF="${SRC_DIR}/meta-custom/conf/templates/default"
+
 echo "${LOGPREFIX} Set TEMPLATECONF to ${TEMPLATECONF}"
 echo "${LOGPREFIX} and initialize build env by poky/oe-init-build-env with BUILD_DIR='${BUILD_DIR}' ..."
-
+echo "${LOGPREFIX} source poky/oe-init-build-env ${BUILD_DIR}"
+echo ""
+# Yocto's interface to initialize the build environment.
 source poky/oe-init-build-env "${BUILD_DIR}"
+echo ""
 
 unset TEMPLATECONF
 
-###############################################################################
-echo ""
 echo "${LOGSEPARATOR}" ########################################################
 echo "${LOGPREFIX} Copy env.sh settings to local.conf..."
 #------------------------------------------------------------------------------
-LOCAL_CONF="conf/local.conf"
-
-# Keep env settings idempotent: remove existing definitions, then add once.
-for key in SSTATE_DIR DL_DIR MACHINE DISTRO; do
-    sed -i -E "/^[[:space:]]*${key}[[:space:]]*=.*/d" "${LOCAL_CONF}"
-done
-
 {
     echo "SSTATE_DIR = \"${SSTATE_DIR}\""
     echo "DL_DIR = \"${DL_DIR}\""
@@ -95,3 +95,4 @@ cd "${SRC_DIR}" || exit
 
 echo "${LOGPREFIX} setup.sh finished."
 echo "${LOGPREFIX} You can now run the build.sh command or run 'bitbake'."
+echo ""
