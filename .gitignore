@@ -13,3 +13,8 @@ meta-clang/
 meta-lts-mixins/
 meta-qt6/
 meta-openjdk-temurin/
+downloads/
+build-*/
+layers/
+setup-environment
+sstate-cache/

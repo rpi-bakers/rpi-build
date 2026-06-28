@@ -67,18 +67,26 @@ LOCAL_CONF="${BUILD_DIR}/conf/local.conf"
 # Remove local.conf if it exists to avoid conflicts with previous settings.
 rm -r "${LOCAL_CONF}"
 
-# Set TEMPLATECONF for poky/scripts/oe-setup-builddir
-TEMPLATECONF="${SRC_DIR}/meta-custom/conf/templates/default"
-
-echo "${LOGPREFIX} Set TEMPLATECONF to ${TEMPLATECONF}"
-echo "${LOGPREFIX} and initialize build env by poky/oe-init-build-env with BUILD_DIR='${BUILD_DIR}' ..."
-echo "${LOGPREFIX} source poky/oe-init-build-env ${BUILD_DIR}"
+echo "${LOGSEPARATOR}" ########################################################
+echo "${LOGPREFIX} Initialize build env by setup-environment with BUILD_DIR='${BUILD_DIR}' ..."
+echo "${LOGPREFIX} source setup-environment ${BUILD_DIR}"
 echo ""
 # Yocto's interface to initialize the build environment.
-source poky/oe-init-build-env "${BUILD_DIR}"
-echo ""
+if [ "${DISTRO}" = "torizon" ]; then
+    #------------------------------------------------------------------------------
+    source "${SRC_DIR}/layers/meta-toradex-torizon/scripts/setup-environment"
+else
+    #------------------------------------------------------------------------------
+    # Set TEMPLATECONF for poky/scripts/oe-setup-builddir
+    echo "${LOGPREFIX} Set TEMPLATECONF to ${TEMPLATECONF}"
 
-unset TEMPLATECONF
+    TEMPLATECONF="${SRC_DIR}/layers/meta-custom/conf/templates/default"
+
+    source poky/oe-init-build-env "${BUILD_DIR}"
+
+    unset TEMPLATECONF
+fi
+echo ""
 
 echo "${LOGSEPARATOR}" ########################################################
 echo "${LOGPREFIX} Copy env.sh settings to local.conf..."

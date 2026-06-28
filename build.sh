@@ -3,7 +3,11 @@
 . env.sh
 
 # source the yocto env
-source poky/oe-init-build-env "${BUILD_DIR}"
+if [ "${DISTRO}" = "torizon" ]; then
+    source layers/meta-toradex-torizon/scripts/setup-environment
+else
+    source poky/oe-init-build-env "${BUILD_DIR}"
+fi
 
 # Build
 echo "Building images:bitbake -k ${IMAGES}"
